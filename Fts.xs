@@ -316,7 +316,7 @@ fts_new(class, ...)
 	    		New(0, path_argv, av_len(arr)+2, char*);
 	    		for(i=0; i<=av_len(arr); i++) {
 	      			elem = *av_fetch(arr, i, 0);
-	      			path_argv[i] = SvPV(elem, na);
+	      			path_argv[i] = SvPV(elem, PL_na);
 	    			path_argv[av_len(arr)+1] = NULL;
 			}
 		} else {
