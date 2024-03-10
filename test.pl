@@ -43,11 +43,11 @@ GetOptions("dir=s" => \$root)
 my %f;
 {
     my $t0 = Time::HiRes::time;
-    my $f = new File::Fts([$root], &FTS_PHYSICAL | &FTS_NOSTAT);
-    while(my $ftsent = File::Fts::read($f)) {
+    my $f = File::Fts->new([$root], &FTS_PHYSICAL | &FTS_NOSTAT);
+    while(my $ftsent = $f->read) {
 	# Directories are visited at least twice (see fts(3)), so
 	# use a hash instead of an array:
-	$f{File::Ftsent::path($ftsent)}++;
+	$f{$ftsent->path}++;
     }
     my $t1 = Time::HiRes::time;
     diag "Time parsing $root with File::Fts: " . ($t1-$t0) . "s, " . (scalar keys %f) . " entries";
