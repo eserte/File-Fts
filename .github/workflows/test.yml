@@ -122,6 +122,10 @@ jobs:
           - perlimage: 5.16.3-buster
           - perlimage: 5.18.4-buster
           - perlimage: 5.22.4-stretch
+          - perlimage: 5.26.3-slim-buster
+          - perlimage: 5.30.3-slim-bullseye
+          - perlimage: 5.32.1-slim-bullseye
+          - perlimage: 5.34.3-threaded-bullseye
           - perlimage: 5.36.0-slim-bullseye
           - perlimage: 5.38.0-slim-bookworm
 
@@ -141,7 +145,7 @@ jobs:
     - name: "system dependencies"
       run: |
         apt-get update -qq
-        apt-get install -q --no-install-recommends -y make gcc
+        apt-get install -q --no-install-recommends -y make gcc libc6-dev
     - name: "build and test"
       run: |
         perl Makefile.PL
