@@ -295,8 +295,11 @@ fts_new(class, ...)
 	PREINIT:
 	char **		path_argv;
 	int		options = FTS_PHYSICAL;
+#ifdef __FreeBSD__
+	int		(*compar)(const FTSENT* const *, const FTSENT* const *) = NULL;
+#else
 	int		(*compar)(const FTSENT**, const FTSENT**) = NULL;
-
+#endif
 	PROTOTYPE: $;\@$\&
 
 	ALIAS:
