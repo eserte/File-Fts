@@ -2,7 +2,7 @@
 # -*- perl -*-
 
 #
-# $Id: test.pl,v 1.1 2005/03/06 17:12:56 eserte Exp $
+# $Id: test.pl,v 1.2 2024/03/10 14:16:36 eserte Exp $
 # Author: Slaven Rezic
 #
 
@@ -12,6 +12,8 @@ use FindBin;
 use Data::Dumper;
 use File::Find;
 use File::Basename qw(dirname);
+use Getopt::Long;
+use Time::HiRes qw();
 
 use File::Fts;
 
@@ -24,23 +26,42 @@ BEGIN {
 	exit;
     }
 }
+if (!eval q{ use Test::Differences; 1 }) {
+    *eq_or_diff = sub {
+	my($got, $expected, @rest) = @_;
+	is_deeply($got, $expected, @rest)
+	    or diag Dumper([$got, $expected]);
+    };
+}
 
 BEGIN { plan tests => 1 }
 
 my $root = dirname $FindBin::RealBin;
+GetOptions("dir=s" => \$root)
+    or die "usage: $0 [--dir /path/to/directory]\n";
+
 my %f;
-my $f = new File::Fts([$root], &FTS_PHYSICAL | &FTS_NOSTAT);
-while(my $ftsent = File::Fts::read($f)) {
-    # Directories are visited at least twice (see fts(3)), so
-    # use a hash instead of an array:
-    $f{File::Ftsent::path($ftsent)}++;
+{
+    my $t0 = Time::HiRes::time;
+    my $f = new File::Fts([$root], &FTS_PHYSICAL | &FTS_NOSTAT);
+    while(my $ftsent = File::Fts::read($f)) {
+	# Directories are visited at least twice (see fts(3)), so
+	# use a hash instead of an array:
+	$f{File::Ftsent::path($ftsent)}++;
+    }
+    my $t1 = Time::HiRes::time;
+    diag "Time parsing $root with File::Fts: " . ($t1-$t0) . "s";
 }
 
 my @f2;
-find(sub { push @f2, $File::Find::name }, $root);
+{
+    my $t0 = Time::HiRes::time;
+    find(sub { push @f2, $File::Find::name }, $root);
+    my $t1 = Time::HiRes::time;
+    diag "Time parsing $root with File::Find: " . ($t1-$t0) . "s";
+}
 
 my @f = sort keys %f;
 @f2 = sort @f2;
 
-is_deeply(\@f, \@f2)
-    or diag Dumper([\@f, \@f2]);
+eq_or_diff(\@f, \@f2, "Compare File::FTS and File::Find filelists");
