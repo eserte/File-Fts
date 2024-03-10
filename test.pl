@@ -2,7 +2,7 @@
 # -*- perl -*-
 
 #
-# $Id: test.pl,v 1.2 2024/03/10 14:16:36 eserte Exp $
+# $Id: test.pl,v 1.3 2024/03/10 14:47:58 eserte Exp $
 # Author: Slaven Rezic
 #
 
@@ -50,7 +50,7 @@ my %f;
 	$f{File::Ftsent::path($ftsent)}++;
     }
     my $t1 = Time::HiRes::time;
-    diag "Time parsing $root with File::Fts: " . ($t1-$t0) . "s";
+    diag "Time parsing $root with File::Fts: " . ($t1-$t0) . "s, " . (scalar keys %f) . " entries";
 }
 
 my @f2;
@@ -58,7 +58,7 @@ my @f2;
     my $t0 = Time::HiRes::time;
     find(sub { push @f2, $File::Find::name }, $root);
     my $t1 = Time::HiRes::time;
-    diag "Time parsing $root with File::Find: " . ($t1-$t0) . "s";
+    diag "Time parsing $root with File::Find: " . ($t1-$t0) . "s, " . (scalar @f2) . " entries";
 }
 
 my @f = sort keys %f;
