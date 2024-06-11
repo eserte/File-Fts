@@ -128,6 +128,7 @@ jobs:
           - perlimage: 5.34.3-threaded-bullseye
           - perlimage: 5.36.0-slim-bullseye
           - perlimage: 5.38.0-slim-bookworm
+          - perlimage: 5.40.0-slim-bookworm
 
     steps:
     - uses: actions/checkout@v3
