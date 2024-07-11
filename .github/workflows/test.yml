@@ -19,6 +19,7 @@ jobs:
        include:
          - os: 'ubuntu-20.04'
          - os: 'ubuntu-22.04'
+         - os: 'ubuntu-24.04'
          - os: 'macos-latest'
     steps:
     - name: apt hacks
@@ -66,7 +67,6 @@ jobs:
           - dist:    opensuse/tumbleweed
             distver: latest
     steps:
-    - uses: actions/checkout@v3
     - name: apt hacks
       run: |
         set -e
@@ -79,6 +79,7 @@ jobs:
             ;;
         esac
       if: "matrix.dist == 'debian' || matrix.dist == 'ubuntu'"
+    - uses: taiki-e/checkout-action@v1
     - name: Install make and C compiler on Debian
       run: |
         set -e
@@ -131,7 +132,6 @@ jobs:
           - perlimage: 5.40.0-slim-bookworm
 
     steps:
-    - uses: actions/checkout@v3
     - name: apt hacks
       run: |
         set -e
@@ -143,6 +143,7 @@ jobs:
             echo "deb [check-valid-until=no] http://archive.debian.org/debian-security/ $CODENAME/updates main" >> /etc/apt/sources.list
             ;;
         esac
+    - uses: taiki-e/checkout-action@v1
     - name: "system dependencies"
       run: |
         apt-get update -qq
