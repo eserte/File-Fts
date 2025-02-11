@@ -17,7 +17,6 @@ jobs:
     strategy:
      matrix:
        include:
-         - os: 'ubuntu-20.04'
          - os: 'ubuntu-22.04'
          - os: 'ubuntu-24.04'
          - os: 'macos-latest'
@@ -64,6 +63,8 @@ jobs:
           #  distver: 7
           - dist:    ubuntu
             distver: 16.04
+          - dist:    ubuntu
+            distver: 20.04
           - dist:    opensuse/tumbleweed
             distver: latest
     steps:
@@ -160,14 +161,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - osvers: '13.3'
-          - osvers: '14.0'
+          - osvers: '13.4'
+          - osvers: '14.2'
     steps:
     - uses: actions/checkout@v4
       with:
         clean: false
         show-progress: false
-    - uses: cross-platform-actions/action@v0.25.0
+    - uses: cross-platform-actions/action@v0.26.0
       with:
         operating_system: freebsd
         version: '${{ matrix.osvers }}'
@@ -184,13 +185,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - osvers: 7.4
+          - osvers: 7.6
     steps:
     - uses: actions/checkout@v4
       with:
         clean: false
         show-progress: false
-    - uses: cross-platform-actions/action@v0.24.0
+    - uses: cross-platform-actions/action@v0.26.0
       with:
         operating_system: openbsd
         version: '${{ matrix.osvers }}'
