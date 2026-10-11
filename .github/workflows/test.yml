@@ -19,6 +19,8 @@ jobs:
        include:
          - os: 'ubuntu-22.04'
          - os: 'ubuntu-24.04'
+         ## XXX needs more work, crypt.h not available
+         #- os: 'ubuntu-26.04'
          - os: 'macos-latest'
     steps:
     - name: apt hacks
@@ -50,8 +52,9 @@ jobs:
             distver: stretch
           - dist:    debian
             distver: buster
-          - dist:    debian
-            distver: bullseye
+          ## debian:bullseye repository currently broken
+          #- dist:    debian
+          #  distver: bullseye
           - dist:    debian
             distver: bookworm
           - dist:    fedora
@@ -125,10 +128,10 @@ jobs:
           - perlimage: 5.18.4-buster
           - perlimage: 5.22.4-stretch
           - perlimage: 5.26.3-slim-buster
-          - perlimage: 5.30.3-slim-bullseye
-          - perlimage: 5.32.1-slim-bullseye
-          - perlimage: 5.34.3-threaded-bullseye
-          - perlimage: 5.36.0-slim-bullseye
+          - perlimage: 5.30.3-slim-buster
+          - perlimage: 5.32.1-slim-buster
+          - perlimage: 5.34.3-threaded-buster
+          - perlimage: 5.36.0-slim-buster
           - perlimage: 5.38.0-slim-bookworm
           - perlimage: 5.40.0-slim-bookworm
 
@@ -157,49 +160,59 @@ jobs:
 
   test_freebsd:
     name: Test on FreeBSD ${{ matrix.osvers }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
           - osvers: '13.5'
-          - osvers: '14.3'
-          - osvers: '15.0'
+          - osvers: '14.5'
+          - osvers: '15.1'
+    defaults:
+      run:
+        # cpa.sh is cross-platform-actions/action "magic"
+        shell: 'cpa.sh {0}'
     steps:
     - uses: actions/checkout@v6
       with:
         clean: false
         show-progress: false
-    - uses: cross-platform-actions/action@v0.32.0
+    - uses: cross-platform-actions/action@v1.6.0
       with:
         operating_system: freebsd
         version: '${{ matrix.osvers }}'
-        run: |
-          sudo pkg update
-          sudo pkg install -y perl5
-          perl Makefile.PL
-          make
-          make test
+    - name: build and test
+      run: |
+        sudo pkg update
+        sudo pkg install -y perl5
+        perl Makefile.PL
+        make
+        make test
 
   test_openbsd:
     name: Test on OpenBSD ${{ matrix.osvers }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
-          - osvers: 7.8
+          - osvers: 7.9
+    defaults:
+      run:
+        # cpa.sh is cross-platform-actions/action "magic"
+        shell: 'cpa.sh {0}'
     steps:
     - uses: actions/checkout@v6
       with:
         clean: false
         show-progress: false
-    - uses: cross-platform-actions/action@v0.32.0
+    - uses: cross-platform-actions/action@v1.6.0
       with:
         operating_system: openbsd
         version: '${{ matrix.osvers }}'
         # note: "doas" is usually preferred over "sudo" in OpenBSD, but atm not available, see https://github.com/cross-platform-actions/action/issues/75
-        run: |
-          sudo pkg_add -u 
-          sudo pkg_add -i perl
-          perl Makefile.PL
-          make
-          make test
+    - name: build and test
+      run: |
+        sudo pkg_add -u 
+        sudo pkg_add -i perl
+        perl Makefile.PL
+        make
+        make test
